@@ -114,3 +114,17 @@ To read more about floating point representation of IEEE 754, go to this [link](
 ### MIPS Assembly Programming
 For simulating MIPS processors, MARS simulator can be used to execute the assembly code of MIPS, and also show the values stored in the registers (First of all, you have to have Java installed on your machine - JRE/ JDK). You can google for MARS simulator for MIPS processors and easily get it.
 
+In the following starting code, we say hello to assembly programming.
+```
+.data
+	message: .asciiz	 "Hello World! \n"
+
+.text
+	li $v0, 4
+	la $a0, message
+	syscall 
+```
+
+The execution of the code above will produce the following result in the MARS simulator.
+
+![Hello World](img/MARS_hello_world.png)
