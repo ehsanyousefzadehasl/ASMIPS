@@ -1,34 +1,44 @@
-# A demonstration of some simple MIPS instructions
-# used to test QtSPIM
+# x = y + z
+add $s0, $s1, $s2
 
-	# Declare main as a global function
-	.globl main 
+# x = y - z
+sub $s0, $s1, $s2
 
-	# All program code is placed after the
-	# .text assembler directive
-	.text 		
+# x[11] = x[10] + y
+lw	$t0, 40($s0)
+add $t1, $t0, $s1
+sw  $t1, 44($s0)
 
-# The label 'main' represents the starting point
-main:
-	li $t2, 25		# Load immediate value (25) 
-	lw $t3, value		# Load the word stored in value (see bottom)
-	add $t4, $t2, $t3	# Add
-	sub $t5, $t2, $t3	# Subtract
-	sw $t5, Z		#Store the answer in Z (declared at the bottom)  
+ # f($s0) = g($s1) - A($s6)[B($s7)[4]]
+ lw $t0, 16($s7)
+ sll $t0, $t0, 2 # because in MIPS pc <- pc + 4 and also every word is consisted of 4 bytes
+ add $t0, $t0, $s6
+ lw  $t0, 0($t0)
+ sub $s0, $s1, $t0
 
-	# Exit the program by means of a syscall.
-	# There are many syscalls - pick the desired one
-	# by placing its code in $v0. The code for exit is "10"
-	li $v0, 10 # Sets $v0 to "10" to select exit syscall
-	syscall # Exit
+ # for (int i($t0) = 0; i < 10; i++)
+ #  	A($s0)[i] = A[i - 1] + B($s1)[i];
 
-	# All memory structures are placed after the
-	# .data assembler directive
-	.data
+ add $t0, $zero, $zero # i <-- 0
+LOOP:
+subi $t1, $t0, 1 // i - 1
+sll  $t1, $t1, 2 // (i - 1) * 4
+add  $t1, $s0, $t1
+lw   $t1, 0($t1)
 
-	# The .word assembler directive reserves space
-	# in memory for a single 4-byte word (or multiple 4-byte words)
-	# and assigns that memory location an initial value
-	# (or a comma separated list of initial values)
-value:	.word 12
-Z:	.word 0
+add  $t2, $t0, $zero
+sll  $t2, $t2, 2
+add  $t2, $s1, $t2
+lw   $t2, 0($t2)
+
+add  $t3, $t1, $t2 # A[i - 1] + B[i] 
+
+add  $t4, $t0, $zero
+sll  $t4, $t4, 2
+add  $t4, $t4, $s0
+sw   $t3, 0($t4)
+
+addi $t0, $t0, 1
+slti $t5, $t0, 10 # if i < 10 $t5 = 1 else $t5 = 0
+bne  $t5, $zero, LOOP
+EXIT:
