@@ -116,12 +116,12 @@ For simulating MIPS processors, MARS simulator can be used to execute the assemb
 
 In the following starting code, we say hello to assembly programming.
 ```
-.data
+.data   # stored in RAM
 	message: .asciiz	 "Hello World! \n"
 
-.text
-	li $v0, 4
-	la $a0, message
+.text   # instructions
+	li $v0, 4  # by loading 4 into $v0, system know that something is going to be printed on the screen
+	la $a0, message  # load address, goes to the RAM and from that address starts to bring data until it reaches the '\n'
 	syscall 
 ```
 
