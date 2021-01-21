@@ -93,6 +93,10 @@ slti $t5, $t0, 10 # if i < 10 $t5 = 1 else $t5 = 0
 bne  $t5, $zero, LOOP
 EXIT:
 ```
+##### **REMEMBER**: beq and bne only compare registers and registers. To compare a register with a constant we have to:
+- Load the constant into a register (addi)
+- Compare the registers (bne/ beq)
+
 
 #### IEEE 754 Floating Point Representation
 - Established in 1985 by IEEE
@@ -198,3 +202,54 @@ The following figure shows the result of the execution of the code above.
 	syscall
 ```
 
+##### Subtraction
+[file](codes/06-subtraction.asm)
+
+```
+.data
+	number1: .word -115
+	number2: .word 13432
+
+.text
+	lw	$t0, number1($zero)
+	lw	$t1, number2($zero)
+	
+  sub 	$t2, $t0, $t1		# $t2 <-- $t0 - $t1
+	
+	# for printing the result
+	li $v0, 1			# to print an integer, load immediate $v0 with 1
+	move  $a0, $t2			# ~= add $a0, $zero, $t2
+	syscall
+```
+
+##### Multiplication
+[mul](codes/07-07-multiplication.asm)
+
+```
+.data
+    	number1: .word -3
+	number2: .word 12
+    	number3: .word 0
+
+.text
+	lw $t0, number1($zero)
+	lw $t1, number2($zero)
+	
+	# instead of doing what we load from memory, we can do as follows
+	addi $t0, $zero, -3
+	addi $t1, $zero, 12
+	
+	mul $t2, $t1, $t0 		# $t2 <-- $t1 * $t0
+	
+	# for printing the result
+	li $v0, 1			# to print an integer, load immediate $v0 with 1
+	move  $a0, $t2			# ~= add $a0, $zero, $t2
+	syscall
+```
+
+More sophisticated multiplication
+[mult](codes)
+
+```
+
+```
