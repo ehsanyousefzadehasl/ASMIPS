@@ -6,6 +6,10 @@ For being a good MIPS assmebly programmer, first we have to know about the archi
 
 MIPS architecture is a 32-bit structure, which means that data are 32-bit wide in this architecture. In the following [figure](https://en.wikipedia.org/wiki/MIPS_architecture_processors#/media/File:MIPS_Architecture_(Pipelined).svg), the overview of the pipelined MIPS architecture can be seen.
 
+**NOTE**: RF width in MIPS microprocessor is 32 bit, and memory is addressable for words (4 bytes), so always in word addresses, bits 0 and 1 are zero.
+
+![Addressing in MIPS](img/addressing_in_MIPS_processors.jpg)
+
 ![MIPS Architecture](img/MIPS_architecture_overview.png)
 
 Additionally, there are 3 instruction categories which can be checked in the following figure.
@@ -114,7 +118,7 @@ To read more about floating point representation of IEEE 754, go to this [link](
 ### MIPS Assembly Programming
 For simulating MIPS processors, MARS simulator can be used to execute the assembly code of MIPS, and also show the values stored in the registers (First of all, you have to have Java installed on your machine - JRE/ JDK). You can google for MARS simulator for MIPS processors and easily get it.
 
-In the following starting code, we say hello to assembly programming.
+In the following starting code, we say hello to assembly programming ([see the asm file](codes/02-Hello_Assembly.asm)).
 ```
 .data   # stored in RAM
 	message: .asciiz	 "Hello World! \n"
@@ -128,3 +132,69 @@ In the following starting code, we say hello to assembly programming.
 The execution of the code above will produce the following result in the MARS simulator.
 
 ![Hello World](img/MARS_hello_world.png)
+
+[This](codes/03-printing_a_char.asm) assembly program shows how to print a character on the screen. Note that we have to use single quotes for the character we want to define in the .data section. If, we use double quotations, we are going to encounter errors.
+```
+.data
+    a_character: .byte	'e'
+    
+.text
+    li  $v0, 4
+    la  $a0, a_character
+    syscall
+```
+In [this file](codes/04-different_types_print.asm), I tried to print many different types of data.
+```
+.data
+	an_integer: .word 25
+
+.text
+	li $v0, 1		# By loading 1 into $v0, we say the processor that we want to print an integer
+	lw $a0, an_integer	# Instead of loading from a address which its end is going to be detected, just load a word
+	syscall
+  ```
+In the following example, an integer, then newline, and then a floating-point number is printed.
+```
+.data
+	new_line: .asciiz "\n"
+	an_integer: .word 25
+	a_float: .float 25.4
+
+.text
+	li $v0, 1		# By loading 1 into $v0, we say the processor that we want to print an integer
+	lw $a0, an_integer	# Instead of loading from a address which its end is going to be detected, just load a word
+	syscall
+	
+	li $v0, 4
+	la $a0, new_line
+	syscall
+	
+	li $v0, 2
+	lwc1 $f12, a_float	# $f12 is in co-processor, so we have to use lwcl
+	syscall
+```
+
+The following figure shows the result of the execution of the code above.
+
+![int - newline - floating-point](img/int_newline_FPN.png)
+
+##### Adding
+[file](codes/05-addition.asm)
+
+```
+.data
+	number1: .word -115
+	number2: .word 13432
+	
+.text
+	lw	$t0, number1($zero)
+	lw	$t1, number2($zero)
+	
+	add 	$t2, $t0, $t1		# $t2 <-- $t0 + $t1
+	
+	# for printing the result
+	li $v0, 1			# to print an integer, load immediate $v0 with 1
+	move  $a0, $t2			# ~= add $a0, $zero, $t2
+	syscall
+```
+
