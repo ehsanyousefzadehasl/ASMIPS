@@ -1,5 +1,5 @@
-## MIPS Assembly
-### Brief Description of MIPS Architecture
+# MIPS Assembly
+## Brief Description of MIPS Architecture
 For being a good MIPS assmebly programmer, first we have to know about the architecture of MIPS processors. So, first of all, I am going to summarize the architecture of MIPS precisely below.
 
 **MIPS**, which stands for **M**icroprocessor without **I**nterlocked **P**ipelined **S**tages is a **RISC** (**R**educed **I**nstruction **S**et **C**omputer) ISA developed by MIPS Technologies (in the US).
@@ -47,7 +47,7 @@ The following figure is a list of MIPS instruction set, which each programmer ne
 ### MIPS assembly Examples
 #### [Some high level snippets in MIPS assembly](codes/01-start.asm)
 
-```
+```python
 # x = y + z
 add $s0, $s1, $s2
 
@@ -119,11 +119,16 @@ EXIT:
 
 To read more about floating point representation of IEEE 754, go to this [link](https://www.geeksforgeeks.org/ieee-standard-754-floating-point-numbers/) and read more, where I borrowed the two recent figures from there.
 
-### MIPS Assembly Programming
+
+---
+
+## MIPS Assembly Programming
+### BASICS
+
 For simulating MIPS processors, MARS simulator can be used to execute the assembly code of MIPS, and also show the values stored in the registers (First of all, you have to have Java installed on your machine - JRE/ JDK). You can google for MARS simulator for MIPS processors and easily get it.
 
 In the following starting code, we say hello to assembly programming ([see the asm file](codes/02-Hello_Assembly.asm)).
-```
+```python
 .data   # stored in RAM
 	message: .asciiz	 "Hello World! \n"
 
@@ -138,7 +143,7 @@ The execution of the code above will produce the following result in the MARS si
 ![Hello World](img/MARS_hello_world.png)
 
 [This](codes/03-printing_a_char.asm) assembly program shows how to print a character on the screen. Note that we have to use single quotes for the character we want to define in the .data section. If, we use double quotations, we are going to encounter errors.
-```
+```python
 .data
     a_character: .byte	'e'
     
@@ -148,7 +153,7 @@ The execution of the code above will produce the following result in the MARS si
     syscall
 ```
 In [this file](codes/04-different_types_print.asm), I tried to print many different types of data.
-```
+```python
 .data
 	an_integer: .word 25
 
@@ -158,7 +163,7 @@ In [this file](codes/04-different_types_print.asm), I tried to print many differ
 	syscall
   ```
 In the following example, an integer, then newline, and then a floating-point number is printed.
-```
+```python
 .data
 	new_line: .asciiz "\n"
 	an_integer: .word 25
@@ -185,7 +190,7 @@ The following figure shows the result of the execution of the code above.
 ##### Adding
 [file](codes/05-addition.asm)
 
-```
+```python
 .data
 	number1: .word -115
 	number2: .word 13432
@@ -205,7 +210,7 @@ The following figure shows the result of the execution of the code above.
 ##### Subtraction
 [file](codes/06-subtraction.asm)
 
-```
+```python
 .data
 	number1: .word -115
 	number2: .word 13432
@@ -223,9 +228,9 @@ The following figure shows the result of the execution of the code above.
 ```
 
 ##### Multiplication
-[mul](codes/07-07-multiplication.asm)
+[mul](codes/07-multiplication.asm)
 
-```
+```python
 .data
     	number1: .word -3
 	number2: .word 12
@@ -247,9 +252,136 @@ The following figure shows the result of the execution of the code above.
 	syscall
 ```
 
-More sophisticated multiplication
-[mult](codes)
+##### More sophisticated multiplication
+[mult](codes/07-mult.asm)
 
+```python
+.data
+	new_line: .asciiz "\n"
+	
+.text
+	addi $t0, $zero, 2000
+	addi $t1, $zero, 100
+	
+	mult $t0, $t1
+	
+	mflo $s0
+	mfhi $s1
+	
+	# display the product to the screen
+	li $v0, 1
+	add $a0, $zero, $s0
+	syscall
+	
+	# newline print 	
+	li $v0, 4
+	la $a0, new_line
+	syscall
+	
+	
+	addi $t0, $zero, 1000
+	sll $s0, $t0, 1
+	
+	# display the product to the screen
+	
+	li $v0, 1
+	add $a0, $zero, $s0
+	syscall
 ```
 
+##### Division
+[div](codes/08-div.asm)
+
+```python
+.data
+
+.text
+	addi $t0, $zero, 200
+	addi $t1, $zero, 20
+	
+	div $t0, $t0, $t1 # $t0 <--- $t0 / $t1
+	
+	# display the product to the screen
+	li $v0, 1
+	add $a0, $zero, $t0
+	syscall
 ```
+
+Using LO and HI registers [link to source code](codes/09-division-prim.asm) - Note that the quotient is going to be kept in LO register, and HI register is going to kept the remainder.
+```python
+.data
+
+.text
+	addi $t0, $zero, 200
+	addi $t1, $zero, 20
+	
+	div $t0, $t1
+
+    	mflo $t0
+	
+	# display the product to the screen
+	li $v0, 1
+	add $a0, $zero, $t0
+	syscall
+```
+
+### PROCEDURES in MIPS
+Procedures avoid code redundancy and increase usability of the code and also eases the programming.
+
+For saying to the system that a program is done, we need the following code.
+```python
+li $v0, 10
+syscall 
+```
+
+For jumping to procedures, we have to save the return address to be able to come back when the procedure is done. So, we use 'jal label' instruction for jumping to the procedures. Also, at the end of the procedure, we have to use 'jr $ra' to return to where we were executing (jal saves PC+4 in the R32 or $ra).
+```python
+jal Label # J-Type instruction
+
+
+Label:
+    # ins 1
+    # ins 2
+
+    # ...
+
+    jr $ra
+```
+
+See this [example](codes/11-procedure1.asm).
+
+But when we hear procedure, we recall function in high level programming languages, and also we want to know more about arguments and return values of a procedure. We are going to use $a1 to $a4 as our arguments, and we are going to store our results in $v1. See this [example](codes/12-procedure-with-arguments-return-value.asm).
+
+```python
+.data
+
+.text
+	addi $a1, $zero, 100
+	addi $a2, $zero, 10
+	
+	# for addition, put your numbers in $a1 and $a2, then you can find your result in $v1
+	jal addition
+	
+	add $a0, $v1, $zero # passing the number that we want to print it
+	
+	# for print, just put the number you want to be printed in the $a0
+	jal integer_print
+	
+	# return 0;
+	li $v0, 10
+	syscall 
+
+
+	addition:
+		add $v1, $a1, $a2
+		jr $ra
+		
+	integer_print:
+		li $v0, 1
+		syscall 
+		jr $ra
+```
+
+#### Stack
+Stack can be used for the evaluation of postfix expressions. It's main application is in nested procedures when R31 ($ra) is not able to keep the return address.
+
