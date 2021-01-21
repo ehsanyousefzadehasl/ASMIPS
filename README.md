@@ -44,6 +44,14 @@ The following figure is a list of MIPS instruction set, which each programmer ne
 
 ![MIPS instruction set](img/MIPS_instruction_set.jpg)
 
+**NOTE**: MIPS processors consider the immediate values in instructions as the following figure shows [ref](https://www.youtube.com/watch?v=1bP6alXjDrw&list=PLylNWPMX1lPnipZzKdCWRj2-un5xvLLdK&index=4).
+
+![How immediate valuse are used in different jumps in MIPS](img/how_jumps_occur_in_mips.png)
+
+**NOTE**: For loading 32-bit wide values we have to use '**lui register, 16-bit_value**' and '**ori register, 16-bit_value**' together like as follows. 
+
+![](img/loading_32-bit_immediates.png)
+
 ### MIPS assembly Examples
 #### [Some high level snippets in MIPS assembly](codes/01-start.asm)
 
