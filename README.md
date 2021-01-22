@@ -195,6 +195,40 @@ The following figure shows the result of the execution of the code above.
 
 ![int - newline - floating-point](img/int_newline_FPN.png)
 
+The following code lists how to print differnt values on screen
+```python
+.data
+	new_line: .asciiz "\n"
+	an_integer: .word 25
+	a_float: .float 25.4
+	a_double: .double 34.23
+	zero_double: .double 0.0
+
+.text
+	li $v0, 1		# By loading 1 into $v0, we say the processor that we want to print an integer
+	lw $a0, an_integer	# Instead of loading from a address which its end is going to be detected, just load a word
+	syscall
+	
+	li $v0, 4
+	la $a0, new_line
+	syscall
+	
+	li $v0, 2
+	lwc1 $f12, a_float	# $f12 is in co-processor, so we have to use lwc1
+	syscall
+	
+	li $v0, 4
+	la $a0, new_line
+	syscall
+	
+	ldc1  $f2, a_double
+	ldc1  $f0, zero_double
+	
+	li $v0, 3
+	add.d $f12, $f2, $f0
+	syscall
+```
+
 ##### Adding
 [file](codes/05-addition.asm)
 
@@ -497,3 +531,186 @@ print_newLine:
 ```
 
 **Note**: It is important to remember that we are the programmer and we can use our tool freely. So, the first key fact to be a good programmer is to understand the basics and use the computing system freely. For example in each procedure when we are going to push the current return address to the stack, we can push other registers values too, consider context switching.
+
+##### Getting input from User
+[Getting integers from the user](codes/15-input_int.asm). The only thing here is to put '5' into $v0 and then 'syscall'.
+```python
+.data
+	message1: .asciiz "Enter Your Age: "
+	message2: .asciiz "\nYour Age is: "
+	newline: .asciiz "\n"
+.text
+	jal print_string1
+	
+	# Getting integer from the user
+	li $v0, 5
+	syscall
+	
+	move $a1, $v0
+	# the entered integer now is in $v0
+	
+	jal print_string2
+	
+	jal print_integer
+	
+	# return 0; end of the program
+	li $v0, 10
+	syscall
+
+print_newline:
+	li $v0, 4
+	la $a0, newline
+	syscall
+	
+	jr $ra
+
+print_string1:
+	li $v0, 4
+	la $a0, message1
+	syscall
+	
+	jr $ra
+	
+print_string2:
+	li $v0, 4
+	la $a0, message2
+	syscall
+	
+	jr $ra
+
+# assumes that the input will be in the $a1		
+print_integer:
+	li $v0, 1
+	add $a0, $zero, $a1
+	syscall
+	
+	jr $ra
+```
+
+[Getting floats from the user](codes/16-input_float.asm)
+
+```python
+.data
+	message1: .asciiz "Enter PI: "
+	message2: .asciiz "\nThe PI is: "
+
+    zeroFloat: .float 0.0
+.text
+
+    	lwc1 $f4, zeroFloat
+
+	jal print_string1
+	
+	# Getting float from the user
+	li $v0, 6
+	syscall
+	# the entered integer now is in $f0 in the co-processor
+	
+	jal print_string2
+	
+	jal print_float
+	
+	# return 0; end of the program
+	li $v0, 10
+	syscall
+
+print_string1:
+	li $v0, 4
+	la $a0, message1
+	syscall
+	
+	jr $ra
+	
+print_string2:
+	li $v0, 4
+	la $a0, message2
+	syscall
+	
+	jr $ra
+
+print_float:
+	li $v0, 2
+	add.s $f12, $f0, $f4
+	syscall
+	
+	jr $ra
+
+```
+
+[Getting doubles from the user]()
+
+```python
+.data
+	message1: .asciiz "Enter PI: "
+	message2: .asciiz "\nThe PI is: "
+
+    	zeroDouble: .double 0.0
+.text
+
+    	lwc1  $f4, zeroDouble 
+	jal print_string1
+	
+	# Getting double from the user
+	li $v0, 7
+	syscall
+	# the entered integer now is in $f0 in the co-processor
+	
+	jal print_string2
+	
+	jal print_double
+	
+	# return 0; end of the program
+	li $v0, 10
+	syscall
+
+print_string1:
+	li $v0, 4
+	la $a0, message1
+	syscall
+	
+	jr $ra
+	
+print_string2:
+	li $v0, 4
+	la $a0, message2
+	syscall
+	
+	jr $ra
+
+print_double:
+	li $v0, 3
+	add.d $f12, $f0, $f4
+	syscall
+	
+	jr $ra
+```
+[Getting text from the user](codes/18-text_from_user.asm)
+
+```python
+.data
+	userInput: .space 50
+	newline: .asciiz "\n"
+.text
+	main:
+		# Getting user's input as text
+		li $v0, 8
+		la $a0, userInput
+		li $a1, 50 # maximum length of the string = number of bytes
+		syscall
+	
+		
+		# printing input
+		li $v0, 4
+		la $a0, newline
+		syscall
+		
+		li $v0, 4
+		la $a0, userInput
+		syscall
+		
+	# return 0; - end of the program
+	li $v0, 10
+	syscall
+```
+
+### Real Structures needed for programming
