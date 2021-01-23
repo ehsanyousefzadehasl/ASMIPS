@@ -714,3 +714,76 @@ print_double:
 ```
 
 ### Real Structures needed for programming
+
+#### IF ELSE Structure
+See how a simple if-else is implemented in assmebly [here](codes/19-if-else-structure.asm).
+
+```python
+.data
+	message1: .asciiz  "Numbers are EQUAL."
+	message2: .asciiz  "Number are not EQUAL."
+.text
+	main:
+		
+		addi $t0, $zero, 5
+		addi $t1, $zero, 20
+		
+		beq $t0, $t1, EQ
+		# bne $t0, $t1, EQ
+		# bge: branch if greater or equal
+		# bgt: branch if greater than
+		# ble: branch if less or equal
+		# blt: branch if less than
+		j NEQ
+		
+		EQ:
+			li $v0, 4
+			la $a0, message1
+			syscall
+		
+		NEQ:
+			li $v0, 4
+			la $a0, message2
+			syscall
+		
+		# return 0; syscall to end the program
+		li $v0, 10
+		syscall 
+```
+
+##### slt instruction
+```python
+# slt: set on less than to one
+.data
+	msgLess: .asciiz "The number is less than the other!"
+	msgNotLess: .asciiz "The number is not less than the other!"
+.text
+	main:
+		addi $t0, $zero, 11
+		addi $t1, $zero, 11
+		
+		add $s0, $zero, $zero
+		
+		slt $s1, $t0, $t1 # if $t0 < $t1 :: $s1 <--- 1
+		
+		beqz $s1, NotLess
+		
+		li $v0, 4
+		la $a0, msgLess
+		syscall 
+		b Exit
+		
+		NotLess:
+			li $v0, 4
+			la $a0, msgNotLess
+			syscall 
+		
+		Exit:
+		# return 0;
+		li $v0, 10
+		syscall
+```
+
+**NOTE**: We can find many instructions for conditional jumps, but these are going to be translated to the provided instruction by the processor, and the assembler is responsible for this task.
+
+#### Loop
