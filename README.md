@@ -787,3 +787,41 @@ See how a simple if-else is implemented in assmebly [here](codes/19-if-else-stru
 **NOTE**: We can find many instructions for conditional jumps, but these are going to be translated to the provided instruction by the processor, and the assembler is responsible for this task.
 
 #### Loop
+For building loops, the knowledge of using jumps (conditional/ and unconditional) are enough. Look at the following example, which its code is [here](codes/21-while_loop.asm).
+```python
+.data
+	message: .asciiz "While is Done!"
+	new_line: .asciiz "\n"
+.text
+	main:
+		# i <- 0
+		addi $t0, $zero, 0
+		
+		while:
+			bgt  $t0, 10, exit
+			
+			addi $t0, $t0, 1	# i <-- i + 1
+			
+			li $v0, 1
+			add $a0, $zero, $t0
+			syscall
+			
+					
+			li $v0, 4
+			la $a0, new_line
+			syscall
+			
+			j while		
+		
+		exit:
+		
+		li $v0, 4
+		la $a0, message
+		syscall 
+		
+	# return 0; == end of program
+	li $v0, 10
+	syscall
+```
+
+### Arrays
