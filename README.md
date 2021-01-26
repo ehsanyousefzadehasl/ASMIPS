@@ -825,3 +825,52 @@ For building loops, the knowledge of using jumps (conditional/ and unconditional
 ```
 
 ### Arrays
+We can define arrays of bytes with the ".space" in the ".data" section. The only thing that we have to pay attention is that while trying to index the words increment or decrement by 4 (word aligned story).
+```python
+.data
+	an_array: .space 12 # 3 words = 3 x 4 Bytes
+	new_line: .asciiz "\n"
+.text
+	main:
+		addi $s0, $zero, 4
+		addi $s1, $zero, 10
+		addi $s2, $zero, 12
+		
+		addi $t0, $zero, 0
+		
+		sw $s0, an_array($t0)
+			addi $t0, $t0, 4
+		
+		sw $s1, an_array($t0)
+			addi $t0, $t0, 4
+			
+		sw $s2, an_array($t0)
+		
+		
+		addi $t1, $zero, 0
+		
+		while:	
+			beq  $t1, 12, exit
+			
+			li $v0, 1
+			lw $a0, an_array($t1)
+			syscall
+			
+			li $v0, 4
+			la $a0, new_line
+			syscall
+			
+			addi $t1, $t1, 4
+			
+			j while	
+		exit:
+	
+	li $v0, 10
+	syscall
+```
+
+Also, an array can be initialized as shown in the following assembly snippet.
+```python
+.data
+		an_array: .word 100:3 # there are 3 elements initialized to 100
+```
