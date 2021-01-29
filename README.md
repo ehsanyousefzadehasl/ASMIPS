@@ -940,3 +940,7 @@ For banching in FP realm, there are following instructions, first just we have t
 ```
 
 ## Recursion in MIPS Assembly
+Check [this](codes/25-factorial_recursive.asm) to get an idea on how we can implement recursion in assembly.
+
+## Examples
+### [Finding Average](codes/27-average.asm)
